@@ -56,94 +56,185 @@
 ```xml
 	<!--HiKariCP数据库连接池-->
 	<dependency>
-	    <groupId>com.zaxxer</groupId>
-	    <artifactId>HikariCP</artifactId>
+		<groupId>com.zaxxer</groupId>
+		<artifactId>HikariCP</artifactId>
 	</dependency>
-	<!--mybatis-plus-->
+	<!--mybatis-plus依赖-->
 	<dependency>
-	    <groupId>com.baomidou</groupId>
-	    <artifactId>mybatis-plus</artifactId>
-	    <version>2.0</version>
+		<groupId>com.baomidou</groupId>
+		<artifactId>mybatis-plus</artifactId>
+		<version>2.1.4</version>
+	</dependency>
+	<!--mybatis-plus代码生成需要velocity引擎支持-->
+	<dependency>
+		<groupId>org.apache.velocity</groupId>
+		<artifactId>velocity-engine-core</artifactId>
+		<version>2.0</version>
+	</dependency>
+	<!--mybatis-plus与springboot整合配置依赖-->
+	<dependency>
+		<groupId>com.baomidou</groupId>
+		<artifactId>mybatisplus-spring-boot-starter</artifactId>
+		<version>1.0.5</version>
 	</dependency>
 ```
 - 配置mybatis-plus Maven代码生成插件, 用于逆向工程根据数据表生成代码。在pom.xml文件中添加如下代码
 
-> 代码生成有java代码和maven插件两种方式，这里我们选择maven插件的方式。另一种方式可参照mybatis-plus[文档](http://mp.baomidou.com/docs/code-generator.html)
+> 代码生成有java代码和maven插件两种方式，这里我们选择java代码方式，创建MpGenerator.java文件。另一种方式可参照mybatis-plus[文档](https://gitee.com/baomidou/mybatisplus-maven-plugin)
 
-```xml
-<plugin>
-    <groupId>com.baomidou</groupId>
-    <artifactId>mybatisplus-maven-plugin</artifactId>
-    <version>1.0</version>
-    <configuration>
-        <!-- 输出目录(设置生成代码的位置，默认java.io.tmpdir) -->
-        <outputDir>/Users/imac/IdeaProjects/javastudy/demo/src/main/java</outputDir>
+```java
+import com.baomidou.mybatisplus.generator.AutoGenerator;
+import com.baomidou.mybatisplus.generator.config.*;
+import com.baomidou.mybatisplus.generator.config.converts.MySqlTypeConvert;
+import com.baomidou.mybatisplus.generator.config.rules.DbColumnType;
+import com.baomidou.mybatisplus.generator.config.rules.DbType;
+import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
 
-        <!-- 是否覆盖同名文件(默认false) -->
-        <fileOverride>true</fileOverride>
-        <!-- mapper.cn.tju.scs.mapper.xml 中添加二级缓存配置(默认true) -->
-        <enableCache>false</enableCache>
-        <!-- 开发者名称 -->
-        <author>daisygao</author>
-        <!-- 数据源配置，( **必配** ) -->
-        <dataSource>
-            <driverName>com.mysql.jdbc.Driver</driverName>
-            <url>jdbc:mysql://localhost:3306/springlearn?characterEncoding=utf8</url>
-            <username>root</username>
-            <password>root</password>
-        </dataSource>
-        <strategy>
-            <!-- 字段生成策略，四种类型，从名称就能看出来含义 nochange(默认), underline_to_camel,(下划线转驼峰)
-                remove_prefix,(去除第一个下划线的前部分，后面保持不变) remove_prefix_and_camel(去除第一个下划线的前部分，后面转驼峰) -->
-            <naming>underline_to_camel</naming>
-            <!--Entity中的ID生成策略（默认 id_worker） -->
-            <idGenType>auto</idGenType>
-            <!--指定Serice接口和实现类的超类 -->
-            <superServiceClass>com.baomidou.mybatisplus.service.IService</superServiceClass>
-            <superServiceImplClass>com.baomidou.mybatisplus.service.impl.ServiceImpl</superServiceImplClass>
-            <!-- 要包含的表 与exclude 二选一配置 -->
-            <include>
-                <property>user</property>
-            </include>
-            <!-- 要排除的表 -->
-            <!--<exclude> -->
-            <!--<property>schema_version</property> -->
-            <!--</exclude> -->
-        </strategy>
-        <packageInfo>
-            <!-- 父级包名称，如果不写，下面的service等就需要写全包名(默认com.baomidou) -->
-            <parent>cn.tju.scs</parent>
-            <!--service包名(默认service) -->
-            <service>service</service>
-            <!--serviceImpl包名(默认service.impl) -->
-            <serviceImpl>service.impl</serviceImpl>
-            <!--entity包名(默认entity) -->
-            <entity>domain</entity>
-            <!--mapper包名(默认mapper) -->
-            <mapper>mapper</mapper>
-            <!--controller包名(默认web)-->
-            <controller>controller</controller>
-            <!--xml包名(默认mapper.xml) -->
-            <xml>mapper.xml</xml>
-        </packageInfo>
-    </configuration>
-    <dependencies>
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.34</version>
-        </dependency>
-    </dependencies>
-</plugin>
+/**
+ * <p>
+ * 代码生成器演示
+ * </p>
+ */
+public class MpGenerator {
+
+    /**
+     * <p>
+     * MySQL 生成演示
+     * </p>
+     */
+    public static void main(String[] args) {
+        AutoGenerator mpg = new AutoGenerator();
+
+        // 全局配置
+        GlobalConfig gc = new GlobalConfig();
+        gc.setOutputDir("/Users/imac/IdeaProjects/javastudy/springboot-test/src/main/java");
+        gc.setFileOverride(true);
+        gc.setActiveRecord(true);// 不需要ActiveRecord特性的请改为false
+        gc.setEnableCache(false);// XML 二级缓存
+        gc.setBaseResultMap(true);// XML ResultMap
+        gc.setBaseColumnList(false);// XML columList
+        // .setKotlin(true) 是否生成 kotlin 代码
+        gc.setAuthor("daisy");
+
+        // 自定义文件命名，注意 %s 会自动填充表实体属性！
+        // gc.setMapperName("%sDao");
+        // gc.setXmlName("%sDao");
+        // gc.setServiceName("MP%sService");
+        // gc.setServiceImplName("%sServiceDiy");
+        // gc.setControllerName("%sAction");
+        mpg.setGlobalConfig(gc);
+
+        // 数据源配置
+        DataSourceConfig dsc = new DataSourceConfig();
+        dsc.setDbType(DbType.MYSQL);
+        dsc.setTypeConvert(new MySqlTypeConvert(){
+            // 自定义数据库表字段类型转换【可选】
+            @Override
+            public DbColumnType processTypeConvert(String fieldType) {
+                System.out.println("转换类型：" + fieldType);
+                // 注意！！processTypeConvert 存在默认类型转换，如果不是你要的效果请自定义返回、非如下直接返回。
+                return super.processTypeConvert(fieldType);
+            }
+        });
+        dsc.setDriverName("com.mysql.jdbc.Driver");
+        dsc.setUsername("root");
+        dsc.setPassword("");
+        dsc.setUrl("jdbc:mysql://127.0.0.1:3306/springlearn?characterEncoding=utf8");
+        mpg.setDataSource(dsc);
+
+        // 策略配置
+        StrategyConfig strategy = new StrategyConfig();
+        // strategy.setCapitalMode(true);// 全局大写命名 ORACLE 注意
+        strategy.setTablePrefix(new String[] { "tlog_", "tsys_" });// 此处可以修改为您的表前缀
+        strategy.setNaming(NamingStrategy.underline_to_camel);// 表名生成策略
+         strategy.setInclude(new String[] { "user" }); // 需要生成的表
+        // strategy.setExclude(new String[]{"test"}); // 排除生成的表
+        // 自定义实体父类
+        // strategy.setSuperEntityClass("com.baomidou.demo.TestEntity");
+        // 自定义实体，公共字段
+        // strategy.setSuperEntityColumns(new String[] { "test_id", "age" });
+        // 自定义 mapper 父类
+        // strategy.setSuperMapperClass("com.baomidou.demo.TestMapper");
+        // 自定义 service 父类
+        // strategy.setSuperServiceClass("com.baomidou.demo.TestService");
+        // 自定义 service 实现类父类
+        // strategy.setSuperServiceImplClass("com.baomidou.demo.TestServiceImpl");
+        // 自定义 controller 父类
+        // strategy.setSuperControllerClass("com.baomidou.demo.TestController");
+        // 【实体】是否生成字段常量（默认 false）
+        // public static final String ID = "test_id";
+        // strategy.setEntityColumnConstant(true);
+        // 【实体】是否为构建者模型（默认 false）
+        // public User setName(String name) {this.name = name; return this;}
+        // strategy.setEntityBuilderModel(true);
+        mpg.setStrategy(strategy);
+
+        // 包配置
+        PackageConfig pc = new PackageConfig();
+        pc.setParent("cn.tju");
+        pc.setModuleName("scs");
+        mpg.setPackageInfo(pc);
+
+//        // 注入自定义配置，可以在 VM 中使用 cfg.abc 【可无】
+//        InjectionConfig cfg = new InjectionConfig() {
+//            @Override
+//            public void initMap() {
+//                Map<String, Object> map = new HashMap<String, Object>();
+//                map.put("abc", this.getConfig().getGlobalConfig().getAuthor() + "-mp");
+//                this.setMap(map);
+//            }
+//        };
+//
+//        // 自定义 xxList.jsp 生成
+//        List<FileOutConfig> focList = new ArrayList<FileOutConfig>();
+//        focList.add(new FileOutConfig("/template/list.jsp.vm") {
+//            @Override
+//            public String outputFile(TableInfo tableInfo) {
+//                // 自定义输入文件名称
+//                return "D://my_" + tableInfo.getEntityName() + ".jsp";
+//            }
+//        });
+//        cfg.setFileOutConfigList(focList);
+//        mpg.setCfg(cfg);
+//
+//        // 调整 xml 生成目录演示
+//        focList.add(new FileOutConfig("/templates/mapper.xml.vm") {
+//            @Override
+//            public String outputFile(TableInfo tableInfo) {
+//                return "/develop/code/xml/" + tableInfo.getEntityName() + ".xml";
+//            }
+//        });
+//        cfg.setFileOutConfigList(focList);
+//        mpg.setCfg(cfg);
+
+//        // 关闭默认 xml 生成，调整生成 至 根目录
+//        TemplateConfig tc = new TemplateConfig();
+//        tc.setXml(null);
+//        mpg.setTemplate(tc);
+
+        // 自定义模板配置，可以 copy 源码 mybatis-plus/src/main/resources/templates 下面内容修改，
+        // 放置自己项目的 src/main/resources/templates 目录下, 默认名称一下可以不配置，也可以自定义模板名称
+        // TemplateConfig tc = new TemplateConfig();
+        // tc.setController("...");
+        // tc.setEntity("...");
+        // tc.setMapper("...");
+        // tc.setXml("...");
+        // tc.setService("...");
+        // tc.setServiceImpl("...");
+        // 如上任何一个模块如果设置 空 OR Null 将不生成该模块。
+        // mpg.setTemplate(tc);
+
+        // 执行生成
+        mpg.execute();
+
+        // 打印注入设置【可无】
+//        System.err.println(mpg.getCfg().getMap().get("abc"));
+    }
+}
 ```
 
-- idea中右侧`Maven Projects`->`Plugins`->`mp`->`mp:code`,双击运行maven插件生成代码，生成的代码结构如下图.
-<img src="https://github.com/gmy987/demo/raw/master/img/5.png" width = "350" height = "400"/> &nbsp;&nbsp;
+- idea中运行`MpGenerator.java`文件，生成的代码结构如下图.
 <img src="https://github.com/gmy987/demo/raw/master/img/6.png" width = "300" height = "400"/>
-
-> 也可以通过命令`mvn mp:code`来执行maven插件
-
-![](https://github.com/gmy987/demo/raw/master/img/7.png)
 
 - 由于idea默认不会将src/java中的xml文件编译,所以在pom.xml的`<build>`标签中添加如下配置, 这样xml文件就会编译到target中。
 
@@ -173,74 +264,8 @@ spring.datasource.type=com.zaxxer.hikari.HikariDataSource
 mybatis.mapper-locations=classpath*:xml/*Mapper.xml
 mybatis.type-aliases-package=cn.tju.scs.domain
 ```
-####5. 添加MybatisConfig.java配置类
 
-```java
-@Configuration
-public class MybatisConfig {
-    @Autowired
-    private DataSource dataSource;
-
-    @Autowired
-    private MybatisProperties properties;
-
-    @Autowired
-    private ResourceLoader resourceLoader = new DefaultResourceLoader();
-
-    @Autowired(required = false)
-    private Interceptor[] interceptors;
-
-    @Autowired(required = false)
-    private DatabaseIdProvider databaseIdProvider;
-
-    /**
-     * mybatis-plus分页插件
-     */
-    @Bean
-    public PaginationInterceptor paginationInterceptor() {
-        PaginationInterceptor page = new PaginationInterceptor();
-        page.setDialectType("mysql");
-        return page;
-    }
-
-    /**
-     * 这里全部使用mybatis-autoconfigure 已经自动加载的资源。不手动指定
-     * 配置文件和mybatis-boot的配置文件同步
-     * @return
-     */
-    @Bean
-    public MybatisSqlSessionFactoryBean mybatisSqlSessionFactoryBean() {
-        MybatisSqlSessionFactoryBean mybatisPlus = new MybatisSqlSessionFactoryBean();
-        mybatisPlus.setDataSource(dataSource);
-        mybatisPlus.setVfs(SpringBootVFS.class);
-        if (StringUtils.hasText(this.properties.getConfigLocation())) {
-            mybatisPlus.setConfigLocation(this.resourceLoader.getResource(this.properties.getConfigLocation()));
-        }
-        mybatisPlus.setConfiguration(properties.getConfiguration());
-        if (!ObjectUtils.isEmpty(this.interceptors)) {
-            mybatisPlus.setPlugins(this.interceptors);
-        }
-        MybatisConfiguration mc = new MybatisConfiguration();
-        mc.setDefaultScriptingLanguage(MybatisXMLLanguageDriver.class);
-        mybatisPlus.setConfiguration(mc);
-        if (this.databaseIdProvider != null) {
-            mybatisPlus.setDatabaseIdProvider(this.databaseIdProvider);
-        }
-        if (StringUtils.hasLength(this.properties.getTypeAliasesPackage())) {
-            mybatisPlus.setTypeAliasesPackage(this.properties.getTypeAliasesPackage());
-        }
-        if (StringUtils.hasLength(this.properties.getTypeHandlersPackage())) {
-            mybatisPlus.setTypeHandlersPackage(this.properties.getTypeHandlersPackage());
-        }
-        if (!ObjectUtils.isEmpty(this.properties.resolveMapperLocations())) {
-            mybatisPlus.setMapperLocations(this.properties.resolveMapperLocations());
-        }
-        return mybatisPlus;
-    }
-
-}
-```
-####6. 在SpringBoot入口类`DemoApplication.java`中添加mapper扫描
+####5. 在SpringBoot入口类`DemoApplication.java`中添加mapper扫描
 ```java
 @MapperScan("cn.tju.scs.mapper")
 @SpringBootApplication
@@ -252,18 +277,18 @@ public class DemoApplication {
 }
 
 ```
-####7. 编写Controller进行测试
+####6. 编写Controller进行测试
 ```java
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/scs/user")
 public class UserController {
     @Autowired
-    IUserService userService;
+    UserServiceImpl userService;
 
-	@RequestMapping("insert")
-	public Object insert(User user) {
-        userService.insert(user);
-        return user;
+    @RequestMapping("select")
+    Object selectUser() {
+        User user = new User();
+        return userService.selectList(new EntityWrapper<>(user));
     }
 }
 ```
