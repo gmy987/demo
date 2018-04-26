@@ -78,9 +78,9 @@
 		<version>1.0.5</version>
 	</dependency>
 ```
-- 配置mybatis-plus Maven代码生成插件, 用于逆向工程根据数据表生成代码。在pom.xml文件中添加如下代码
+- 创建MpGenerator.java文件, 用于逆向工程根据数据表生成代码。在项目中任意位置创建文件并运行。
 
-> 代码生成有java代码和maven插件两种方式，这里我们选择java代码方式，创建MpGenerator.java文件。另一种方式可参照mybatis-plus[文档](https://gitee.com/baomidou/mybatisplus-maven-plugin)
+> 代码生成有java代码和maven插件两种方式，这里我们选择java代码方。另一种方式可参照mybatis-plus[文档](https://gitee.com/baomidou/mybatisplus-maven-plugin)
 
 ```java
 import com.baomidou.mybatisplus.generator.AutoGenerator;
